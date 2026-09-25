@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './App.css'
 
@@ -11,16 +10,28 @@ const pokemonTypes = [
 
 function App() {
   const [selectedType, setSelectedType] = useState('Fire')
+  const [result, setResult] = useState('')
 
+  async function getMatchup(type) {
+    try {
+      const response = await fetch(`http://localhost:5001/api/type/${type.toLowerCase()}`)
 
+      if (!response.ok) {
+        throw new Error('Unable to fetch matchup data')
+      }
 
-function getMatchup(type) {
-  // API CALL WILL GO HERE, AND WE WILL RETURN THE RESPONSE
-  return `Fake API response: You are fighting a ${type}-type Pokémon.`;
+      const data = await response.json()
+      return `Half damage to: ${data.half_damage_to.join(', ')}. Double damage from: ${data.double_damage_from.join(', ')}.`
+    } catch (error) {
+      console.error(error)
+      return `Could not load matchup for ${type}.`
+    }
+  }
 
-    function handleTypeClick(type) {
-  const response = getMatchup(type);
-  setResult(response);
+  function handleTypeClick(type) {
+    setSelectedType(type)
+    getMatchup(type).then((matchup) => setResult(matchup))
+  }
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fff7db,_#f3f4f6_40%,_#dfe7f3_100%)] px-4 py-10 text-slate-800">
@@ -65,9 +76,12 @@ function getMatchup(type) {
               })}
             </div>
 
-            <p className="mt-7 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-slate-700">
-              You clicked: {selectedType}
-            </p>
+            <div className="mt-7 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-slate-700">
+              <p>
+                <span className="font-semibold text-slate-900">You clicked:</span> {selectedType}
+              </p>
+              {result && <p className="mt-2">{result}</p>}
+            </div>
           </div>
         </div>
       </div>
