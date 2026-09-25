@@ -1,0 +1,12 @@
+.pokemon-card {
+  position: relative;
+}
+
+.pokemon-card::before {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 22px;
+  pointer-events: none;
+}
